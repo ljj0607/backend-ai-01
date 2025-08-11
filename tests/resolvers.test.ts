@@ -20,7 +20,7 @@ describe('Resolvers', () => {
     it('should validate empty messages', async () => {
       const mockContext = {
         openai: {},
-        env: { OPENAI_API_KEY: 'test-key' },
+        env: { DEEPSEEK_API_KEY: 'test-key' },
       } as Context;
 
       const result = await resolvers.Mutation.sendMessage(
@@ -36,7 +36,7 @@ describe('Resolvers', () => {
     it('should handle missing API key', async () => {
       const mockContext = {
         openai: {},
-        env: { OPENAI_API_KEY: '' },
+        env: { DEEPSEEK_API_KEY: '' },
       } as Context;
 
       const result = await resolvers.Mutation.sendMessage(

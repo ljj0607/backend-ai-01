@@ -10,7 +10,7 @@ name = "backend-ai-01-staging"
 
 # Uncomment and add your OpenAI API key
 # [vars]
-# OPENAI_API_KEY = "your-openai-api-key"
+# DEEPSEEK_API_KEY = "your-openai-api-key"
 
 # Or use secrets for sensitive data (recommended)
-# Run: wrangler secret put OPENAI_API_KEY
+# Run: wrangler secret put DEEPSEEK_API_KEY

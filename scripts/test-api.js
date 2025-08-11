@@ -68,7 +68,7 @@ async function testAPI() {
     
     if (messageData.data?.sendMessage?.error) {
       console.log('⚠️  Send Message returned error:', messageData.data.sendMessage.error);
-      console.log('   Make sure OPENAI_API_KEY is configured');
+      console.log('   Make sure DEEPSEEK_API_KEY is configured');
     } else {
       console.log('✅ Send Message Response:', messageData.data.sendMessage.response);
     }
