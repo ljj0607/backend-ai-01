@@ -16,7 +16,8 @@ async function testDeepSeekAPI() {
   console.log('🔑 使用API密钥:', API_KEY.substring(0, 10) + '...');
   
   try {
-    const response = await fetch('https://api.deepseek.com/v1/chat/completions', {
+    // 修复：使用正确的DeepSeek API端点
+    const response = await fetch('https://api.deepseek.com/chat/completions', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -32,6 +33,7 @@ async function testDeepSeekAPI() {
         ],
         max_tokens: 200,
         temperature: 0.7,
+        stream: false,
       }),
     });
 
