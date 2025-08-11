@@ -1,24 +1,32 @@
 # AI Chat Tool Backend
 
-A serverless GraphQL backend for AI chat applications, powered by OpenAI, GraphQL Yoga, and Cloudflare Workers.
+A serverless GraphQL backend for AI chat applications, powered by **DeepSeek AI**, GraphQL Yoga, and Cloudflare Workers.
 
 ## Features
 
 - 🚀 Serverless deployment on Cloudflare Workers
 - 🔧 GraphQL API with GraphQL Yoga
-- 🤖 OpenAI GPT integration
+- 🤖 **DeepSeek AI integration** (更经济实惠的选择)
 - 📝 Full Markdown support in responses
 - ⚡ Fast, scalable, and globally distributed
 - 🔒 Secure API key management
 - 🧪 Jest testing setup
 - 📊 GraphQL Playground for API testing
+- 💰 **Free credits for new users** (5 million tokens)
+
+## Why DeepSeek?
+
+- **Cost-effective**: ~1/10 the price of OpenAI
+- **Free credits**: New users get 5 million free tokens
+- **Chinese language support**: Excellent Chinese understanding
+- **OpenAI compatible**: Uses the same SDK format
 
 ## Prerequisites
 
 - Node.js 16+
 - npm or yarn
 - Cloudflare account (free tier works)
-- OpenAI API key
+- **DeepSeek API key** (get from https://platform.deepseek.com)
 - Wrangler CLI (installed via npm)
 
 ## Installation
@@ -34,17 +42,23 @@ cd backend-ai-01
 npm install
 ```
 
-3. Configure your OpenAI API key:
+3. Get your DeepSeek API key:
+   - Visit https://platform.deepseek.com
+   - Register for a free account
+   - Get your API key (starts with `sk-`)
+   - New users receive 5 million free tokens!
+
+4. Configure your DeepSeek API key:
 
 **Option 1: Using Wrangler secrets (Recommended for production)**
 ```bash
-wrangler secret put OPENAI_API_KEY
-# Enter your OpenAI API key when prompted
+wrangler secret put DEEPSEEK_API_KEY
+# Enter your DeepSeek API key when prompted
 ```
 
 **Option 2: Using .dev.vars file (For local development)**
 ```bash
-echo "OPENAI_API_KEY=your-openai-api-key-here" > .dev.vars
+echo "DEEPSEEK_API_KEY=sk-your-deepseek-api-key" > .dev.vars
 ```
 
 ## Development
@@ -106,7 +120,17 @@ query HealthCheck {
 }
 ```
 
-**Send a Message:**
+**Send a Message (Chinese):**
+```graphql
+mutation SendMessage {
+  sendMessage(message: "什么是GraphQL？请用中文回答") {
+    response
+    error
+  }
+}
+```
+
+**Send a Message (English):**
 ```graphql
 mutation SendMessage {
   sendMessage(message: "What is GraphQL?") {
@@ -127,7 +151,7 @@ curl -X POST http://localhost:8787/graphql \
 # Send message
 curl -X POST http://localhost:8787/graphql \
   -H "Content-Type: application/json" \
-  -d '{"query": "mutation { sendMessage(message: \"Hello AI!\") { response error } }" }'
+  -d '{"query": "mutation { sendMessage(message: \"你好!\") { response error } }" }'
 ```
 
 ## Running Tests
@@ -145,12 +169,17 @@ npm test
 wrangler login
 ```
 
-2. Deploy:
+2. Set your DeepSeek API key as a secret:
+```bash
+wrangler secret put DEEPSEEK_API_KEY
+```
+
+3. Deploy:
 ```bash
 npm run deploy
 ```
 
-3. Your API will be available at:
+4. Your API will be available at:
 ```
 https://backend-ai-01.<your-subdomain>.workers.dev/graphql
 ```
@@ -174,8 +203,8 @@ src/
 ├── index.ts           # Main entry point
 ├── schema.ts          # GraphQL schema setup
 ├── typeDefs.ts        # GraphQL type definitions
-├── resolvers.ts       # GraphQL resolvers
-├── context.ts         # GraphQL context setup
+├── resolvers.ts       # GraphQL resolvers (DeepSeek integration)
+├── context.ts         # GraphQL context setup (DeepSeek client)
 └── utils/
     ├── messageHistory.ts  # Conversation history management
     └── validation.ts      # Input validation utilities
@@ -192,16 +221,17 @@ The `wrangler.toml` file contains Cloudflare Workers configuration:
 
 ### Environment Variables
 
-- `OPENAI_API_KEY`: Your OpenAI API key (required)
+- `DEEPSEEK_API_KEY`: Your DeepSeek API key (required)
 
 ## Error Handling
 
 The API includes comprehensive error handling for:
 - Invalid or empty messages
 - Missing API keys
-- OpenAI API errors
+- DeepSeek API errors
 - Rate limiting
 - Network timeouts
+- Insufficient balance
 
 ## Security Best Practices
 
@@ -214,19 +244,31 @@ The API includes comprehensive error handling for:
 
 ### Common Issues
 
-1. **"OpenAI API key is not configured" error**
-   - Ensure you've set the OPENAI_API_KEY using `wrangler secret put` or in `.dev.vars`
+1. **"DeepSeek API key is not configured" error**
+   - Ensure you've set the DEEPSEEK_API_KEY using `wrangler secret put` or in `.dev.vars`
 
 2. **"Invalid API key" error**
-   - Verify your OpenAI API key is correct and active
+   - Verify your DeepSeek API key is correct (should start with `sk-`)
+   - Check your account at https://platform.deepseek.com
 
-3. **CORS errors in frontend**
+3. **"Insufficient balance" error**
+   - Check your DeepSeek account balance
+   - New users should have free credits available
+
+4. **CORS errors in frontend**
    - Check the CORS configuration in `src/index.ts`
    - Ensure the frontend URL is allowed
 
-4. **Deployment fails**
+5. **Deployment fails**
    - Run `wrangler whoami` to ensure you're logged in
    - Check your Cloudflare account has Workers enabled
+
+## DeepSeek API Pricing
+
+- **Input**: ¥1 / 1M tokens (~$0.14 USD)
+- **Output**: ¥2 / 1M tokens (~$0.28 USD)
+- **Free credits**: 5 million tokens for new users
+- Much more affordable than OpenAI!
 
 ## Contributing
 
