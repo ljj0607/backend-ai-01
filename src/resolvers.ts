@@ -29,18 +29,27 @@ export const resolvers = {
           };
         }
 
-        console.log('----', context.env.DEEPSEEK_API_KEY)
+        console.log('🔍 Debug info:', {
+          messageLength: message.length,
+          hasApiKey: !!context.env.DEEPSEEK_API_KEY,
+          apiKeyPrefix: context.env.DEEPSEEK_API_KEY?.substring(0, 10) + '...',
+        });
 
         // Check for API key
         if (!context.env.DEEPSEEK_API_KEY || context.env.DEEPSEEK_API_KEY === 'dummy-key') {
           console.error('DeepSeek API key is not configured');
           return {
-            response: `🤖 模拟助手回复：我收到了您的消息 "${message}"。\n\n要使用真实的 AI 响应，请：\n1. 注册 DeepSeek 账号：https://platform.deepseek.com\n2. 获取 API Key（新用户有免费额度）\n3. 在 .dev.vars 文件中设置 DEEPSEEK_API_KEY=sk-xxxxx`,
+            response: `🤖 模拟助手回复：我收到了您的消息 "${message}"。
+
+要使用真实的 AI 响应，请：
+1. 注册 DeepSeek 账号：https://platform.deepseek.com
+2. 获取 API Key（新用户有免费额度）
+3. 在 .dev.vars 文件中设置 DEEPSEEK_API_KEY=sk-xxxxx`,
             error: null,  // 返回模拟响应而不是错误
           };
         }
 
-        console.log('Calling DeepSeek API...');
+        console.log('✅ API密钥已配置，正在调用DeepSeek API...');
 
         // Create messages array for DeepSeek
         const messages: ChatCompletionMessageParam[] = [
@@ -64,14 +73,18 @@ export const resolvers = {
         });
 
         const response = completion.choices[0]?.message?.content || '没有生成响应';
-        console.log('DeepSeek response received');
+        
+        console.log('🎉 DeepSeek API调用成功:', {
+          responseLength: response.length,
+          usage: completion.usage,
+        });
 
         return {
           response,
           error: null,
         };
       } catch (error) {
-        console.error('Error in sendMessage resolver:', error);
+        console.error('💥 sendMessage解析器错误:', error);
         
         // Handle specific error types
         if (error instanceof Error) {
@@ -82,21 +95,27 @@ export const resolvers = {
               error: 'DeepSeek API 密钥无效。请检查您的 DEEPSEEK_API_KEY 配置。',
             };
           }
+          
+          // 余额不足
+          if (error.message.includes('402') || error.message.includes('insufficient') || error.message.includes('balance')) {
+            return {
+              response: '',
+              error: 'DeepSeek API 余额不足。请检查您的账户余额或使用免费额度。访问：https://platform.deepseek.com',
+            };
+          }
+          
           // 速率限制
           if (error.message.includes('429') || error.message.includes('rate')) {
-            // 返回友好的提示而不是错误
             return {
-              response: `🤖 系统繁忙，让我用模拟方式回复您：\n\n您说："${message}"\n\n这听起来很有趣！由于请求过多，请稍后再试真实的 AI 响应。`,
+              response: `🤖 系统繁忙：由于请求过多，让我用模拟方式回复您。
+
+您说："${message}"
+
+这听起来很有趣！请稍后再试真实的 AI 响应。`,
               error: null,
             };
           }
-          // 余额不足
-          if (error.message.includes('insufficient') || error.message.includes('balance')) {
-            return {
-              response: '',
-              error: 'DeepSeek API 余额不足。请检查您的账户余额或使用免费额度。',
-            };
-          }
+          
           // 网络超时
           if (error.message.includes('timeout')) {
             return {
@@ -104,6 +123,7 @@ export const resolvers = {
               error: '请求超时，请稍后再试。',
             };
           }
+          
           // 网络错误
           if (error.message.includes('fetch') || error.message.includes('network')) {
             return {
@@ -113,9 +133,18 @@ export const resolvers = {
           }
         }
 
+        // 记录详细错误信息用于调试
+        console.error('详细错误信息:', {
+          name: error?.name,
+          message: error?.message,
+          stack: error?.stack,
+        });
+
         // 未知错误 - 返回友好的模拟响应
         return {
-          response: `🤖 模拟助手：我收到了您的消息 "${message}"。系统暂时无法连接到 AI 服务，但我会尽力帮助您！`,
+          response: `🤖 模拟助手：我收到了您的消息 "${message}"。系统暂时无法连接到 AI 服务，但我会尽力帮助您！
+
+错误详情（用于调试）：${error?.message || '未知错误'}`,
           error: null,
         };
       }
