@@ -10,7 +10,7 @@ export function createContext(env: Env): Context {
   // DeepSeek API 兼容 OpenAI SDK，只需要修改 baseURL
   const deepseek = new OpenAI({
     apiKey: env.DEEPSEEK_API_KEY || 'dummy-key',
-    baseURL: 'https://api.deepseek.com/v1',  // DeepSeek API 端点
+    baseURL: 'https://api.deepseek.com/v1/chat/completions',  // DeepSeek API 端点
   });
 
   return {

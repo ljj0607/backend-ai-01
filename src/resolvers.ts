@@ -29,6 +29,8 @@ export const resolvers = {
           };
         }
 
+        console.log('----', context.env.DEEPSEEK_API_KEY)
+
         // Check for API key
         if (!context.env.DEEPSEEK_API_KEY || context.env.DEEPSEEK_API_KEY === 'dummy-key') {
           console.error('DeepSeek API key is not configured');
