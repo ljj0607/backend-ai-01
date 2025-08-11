@@ -10,7 +10,7 @@ export function createContext(env: Env): Context {
   // 根据官方文档：https://api-docs.deepseek.com/
   // DeepSeek API 兼容 OpenAI SDK，使用正确的 baseURL
   const deepseek = new OpenAI({
-    apiKey: env.DEEPSEEK_API_KEY || 'dummy-key',
+    apiKey: env.DEEPSEEK_API_KEY,
     baseURL: 'https://api.deepseek.com',  // 官方推荐的 baseURL
   });
 
