@@ -3,7 +3,7 @@ import { schema } from './schema';
 import { createContext } from './context';
 
 export interface Env {
-  OPENAI_API_KEY: string;
+  DEEPSEEK_API_KEY: string;  // 改为 DEEPSEEK_API_KEY
 }
 
 export default {
